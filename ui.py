@@ -45,10 +45,14 @@ def ejecutar():
             datos = generar_datos("uniforme", size, a=a, b=b)
         elif dist == "Exponencial":
             lambd = float(entrada_param1.get())
+            if lambd <= 0:
+                raise ValueError("Lambda debe ser mayor a cero")
             datos = generar_datos("exponencial", size, lambd=lambd)
         elif dist == "Normal":
             mu = float(entrada_param1.get())
             sigma = float(entrada_param2.get())
+            if sigma <= 0:
+                raise ValueError("Sigma(La desviación) debe ser mayor a cero")
             datos = generar_datos("normal", size, mu=mu, sigma=sigma)
         else:
             raise ValueError("Distribución no reconocida.")
