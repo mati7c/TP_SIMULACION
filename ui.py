@@ -40,6 +40,8 @@ def ejecutar():
         if dist == "Uniforme":
             a = float(entrada_param1.get())
             b = float(entrada_param2.get())
+            if a >= b:
+                raise ValueError("a debe ser menor que b")
             datos = generar_datos("uniforme", size, a=a, b=b)
         elif dist == "Exponencial":
             lambd = float(entrada_param1.get())
@@ -53,7 +55,7 @@ def ejecutar():
 
         # Mostrar datos generados
         text_datos.delete("1.0", tk.END)
-        text_datos.insert(tk.END, "\n".join(f"{x:.4f}" for x in datos[:100]))
+        text_datos.insert(tk.END, "\n".join(f"{x:.4f}" for x in datos[:]))
 
         # Mostrar tabla de frecuencias
         tabla = mostrar_tabla_frecuencias(datos, bins)
@@ -103,7 +105,7 @@ bins_var.current(0)
 tk.Button(ventana, text="Ejecutar", command=ejecutar).grid(row=5, column=1, pady=10)
 
 # Resultados
-tk.Label(ventana, text="Números Aleatorios Generados (primeros 100):").grid(row=6, column=0, sticky="w")
+tk.Label(ventana, text="Números Aleatorios Generados:").grid(row=6, column=0, sticky="w")
 text_datos = tk.Text(ventana, height=10, width=50)
 text_datos.grid(row=7, column=0, columnspan=2)
 
