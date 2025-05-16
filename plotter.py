@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def graficar_histograma(datos, bins):
+    plt.ion()
     plt.figure("Histograma")
     plt.hist(datos, bins=bins, edgecolor='black')
     plt.title("Histograma")
@@ -9,7 +10,8 @@ def graficar_histograma(datos, bins):
     plt.ylabel("Frecuencia")
     plt.grid(True)
     plt.tight_layout()
-    plt.show()  # Esto abre una nueva ventana con el gráfico
+    plt.draw()
+    plt.pause(0.001)
 
 def mostrar_tabla_frecuencias(datos, bins):
     series = pd.Series(datos)

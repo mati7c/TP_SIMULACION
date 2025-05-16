@@ -1,3 +1,5 @@
+from chi_cuadrado import obtener_tabla_chi_cuadrado, calcular_chi_tabla
+from scipy.stats import chi2
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 from generator import generar_datos
@@ -58,35 +60,48 @@ def ejecutar():
             if a >= b:
                 raise ValueError("a debe ser menor que b")
             datos = generar_datos("uniforme", size, a=a, b=b)
+            g_l = bins - 1
         elif dist == "Exponencial":
             lambd = float(entrada_param1.get())
             if lambd <= 0:
                 raise ValueError("Lambda debe ser mayor a cero")
             datos = generar_datos("exponencial", size, lambd=lambd)
+            g_l = bins - 2
         elif dist == "Normal":
             mu = float(entrada_param1.get())
             sigma = float(entrada_param2.get())
             if sigma <= 0:
-                raise ValueError("Sigma (desviación estándar) debe ser mayor a cero")
+                raise ValueError("Sigma (desviación) debe ser mayor a cero")
             datos = generar_datos("normal", size, mu=mu, sigma=sigma)
+            g_l = bins - 3
         else:
             raise ValueError("Distribución no reconocida.")
 
         # Mostrar datos generados
         text_datos.delete("1.0", tk.END)
-        text_datos.insert(tk.END, "\n".join(f"{x:.4f}" for x in datos[:100]))
-
+        text_datos.insert(tk.END, "\n".join(f"{x:.4f}" for x in datos[:]))
         # Mostrar tabla de frecuencias
         tabla = mostrar_tabla_frecuencias(datos, bins)
         text_tabla.delete("1.0", tk.END)
         for intervalo, freq in tabla:
             text_tabla.insert(tk.END, f"{intervalo}: {freq}\n")
 
+        # Calcular Chi-cuadrado
+        tabla_chi = obtener_tabla_chi_cuadrado(datos, bins, dist.lower())
+        chi_valor = calcular_chi_tabla(tabla_chi)
+        chi_critico = chi2.ppf(0.95, g_l)
+        resultado = "SE ACEPTA la hipótesis nula" if chi_valor < chi_critico else "SE RECHAZA la hipótesis nula"
+
+        text_chi.delete("1.0", tk.END)
+        text_chi.insert(tk.END, f"Chi² calculado: {chi_valor:.4f}\n")
+        text_chi.insert(tk.END, f"Chi² crítico (gl={g_l}, α=0.05): {chi_critico:.4f}\n")
+        text_chi.insert(tk.END, f"Resultado: {resultado}")
+
         # Mostrar histograma
         graficar_histograma(datos, bins)
 
     except ValueError as e:
-        messagebox.showerror("Error", str(e), icon="error")
+        messagebox.showerror("Error", str(e))
 
 # Configuración de la ventana principal
 ventana = tk.Tk()
@@ -198,15 +213,22 @@ text_datos.pack(fill="both", expand=True, padx=5, pady=5)
 # Pestaña de tabla de frecuencias
 tab_frecuencias = ttk.Frame(notebook)
 notebook.add(tab_frecuencias, text="Tabla de Frecuencias")
+tab_chi = ttk.Frame(notebook)
+notebook.add(tab_chi, text="Chi-Cuadrado")
 
 tk.Label(tab_frecuencias, text="Tabla de Frecuencias", 
          font=HEADER_FONT, fg="#2c3e50", bg=FRAME_COLOR).pack(anchor="w", padx=5, pady=(5, 0))
 tk.Label(tab_frecuencias, text="Distribución de frecuencias:", 
          font=FONT, fg="#2c3e50", bg=FRAME_COLOR).pack(anchor="w", padx=5, pady=5)
+tk.Label(tab_chi, text="Resultado Chi-Cuadrado", 
+         font=HEADER_FONT, fg=PRIMARY_COLOR, bg=FRAME_COLOR).pack(anchor="w", padx=5, pady=(5, 0))
 
 text_tabla = scrolledtext.ScrolledText(tab_frecuencias, height=15, width=50, bg=TEXT_BG, font=FONT,
                                      wrap=tk.NONE, relief="solid", borderwidth=1)
 text_tabla.pack(fill="both", expand=True, padx=5, pady=5)
+text_chi = scrolledtext.ScrolledText(tab_chi, height=10, width=60, bg=TEXT_BG, font=FONT,
+                                     wrap=tk.WORD, relief="solid", borderwidth=1)
+text_chi.pack(fill="both", expand=True, padx=5, pady=5)
 
 # Configurar el grid para que sea responsivo
 ventana.grid_columnconfigure(0, weight=1)
