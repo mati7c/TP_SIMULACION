@@ -1,0 +1,21 @@
+# Entorno virtual
+venv/
+
+# Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Archivos del entorno de desarrollo (por ejemplo, PyCharm)
+.idea/
+
+# Archivos de log o temporales
+*.log
+*.tmp
+
+# Archivos de configuración del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de Jupyter
+.ipynb_checkpoints/
