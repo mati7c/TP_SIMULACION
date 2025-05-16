@@ -90,7 +90,7 @@ def ejecutar():
         tabla_chi = obtener_tabla_chi_cuadrado(datos, bins, dist.lower())
         chi_valor = calcular_chi_tabla(tabla_chi)
         chi_critico = chi2.ppf(0.95, g_l)
-        resultado = "SE ACEPTA la hipótesis nula" if chi_valor < chi_critico else "SE RECHAZA la hipótesis nula"
+        resultado = "NO HAY SUFICIENTE EVIDENCIA para rechazar la hipótesis nula" if chi_valor < chi_critico else "SE RECHAZA la hipótesis nula"
 
         text_chi.delete("1.0", tk.END)
         text_chi.insert(tk.END, f"Chi² calculado: {chi_valor:.4f}\n")
